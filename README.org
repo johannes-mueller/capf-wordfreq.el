@@ -1,3 +1,5 @@
+[[https://github.com/johannes-mueller/capf-wordfreq.el/workflows/Tests/badge.svg]]
+
 * capf-wordfreq.el
 
 A `completion-at-point` function for human language texts based on word frequency
