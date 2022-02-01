@@ -1,0 +1,50 @@
+* capf-wordfreq.el
+
+A `completion-at-point` function for human language texts based on word frequency
+dictionaries.
+
+** Synopsis
+
+=capf-wordfreq= is a `completion-at-point` fnuciton intended for writing texts
+in a human language.  The completions it proposes are words already used in the
+current (or another open) buffer and matching words from a word list file.
+This word list file is supposed to be a simple list of words ordered by the
+frequency the words are used in the language.  So the first completions are
+words already used in the buffer followed by matching words of the language
+ordered by frequency.
+
+*** Why not =cape-ispell= or =cape-dict=?
+
+=cape-ispell= from the great [[https://github.com/minad/cape][cape.el]] package
+presents you the candidates in the alphabetical sequence. That way it often happens
+that the word you are about to type appears somewhere in eighth place and it is
+actually easier to type the word manually.
+
+=capf-wordfreq= however uses word lists in which the words are ordered
+according to their frequency in the language. That way the probability that the
+word you want to type is among the first is higher.
+
+The package is still somewhat in an experimental stage. There might be ways to
+even more optimize the behavior.
+
+** Installation
+
+As of now, there is no ELPA or MELPA package available.  The easiest way to
+install it is to use [[https://github.com/raxod502/straight.el][straight.el]].
+
+#+BEGIN_EXAMPLE emacs-lisp
+(straight-use-package
+ '(capf-wordfreq :type git :host github :repo "johannes-mueller/capf-wordfreq.el"))
+#+END_EXAMPLE
+
+** Word list files
+
+This is a new implementation of [[https://github.com/johannes-mueller/company-wordfreq.el][company-wordfreq.el]] which depends on
+[[http://company-mode.github.io/][company-mode]].  ==capf-wordfreq== uses the same dictionary files.  For the time
+being use the ==company-wordfreq.el== to download the dictionaty files.
+
+** Status
+
+It is a quick reimplementation of ==company-wordfreq.el== in an early stage of
+development.  After a bit of testing I will eventually add the dictionary
+download features and submit it to MELPA.
