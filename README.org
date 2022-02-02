@@ -42,11 +42,11 @@ install it is to use [[https://github.com/raxod502/straight.el][straight.el]].
 ** Word list files
 
 This is a new implementation of [[https://github.com/johannes-mueller/company-wordfreq.el][company-wordfreq.el]] which depends on
-[[http://company-mode.github.io/][company-mode]].  ==capf-wordfreq== uses the same dictionary files.  For the time
-being use the ==company-wordfreq.el== to download the dictionaty files.
+[[http://company-mode.github.io/][company-mode]].  =capf-wordfreq= uses the same dictionary files.  For the time
+being use the =company-wordfreq.el= to download the dictionaty files.
 
 ** Status
 
-It is a quick reimplementation of ==company-wordfreq.el== in an early stage of
+It is a quick reimplementation of =company-wordfreq.el= in an early stage of
 development.  After a bit of testing I will eventually add the dictionary
 download features and submit it to MELPA.

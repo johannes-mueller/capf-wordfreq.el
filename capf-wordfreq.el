@@ -55,6 +55,7 @@ the current buffer."
                              " " (capf-wordfreq--dictionary)))
    "\n"))
 
+;;;###autoload
 (defun capf-wordfreq-completion-at-point-function ()
   (let* ((bounds (bounds-of-thing-at-point 'word))
 	 (beg (car bounds))
