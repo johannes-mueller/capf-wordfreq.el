@@ -53,7 +53,9 @@ the current buffer."
    " " (capf-wordfreq--dictionary)))
 
 (defun capf-wordfreq--fetch-candidates-raw (prefix)
-  (shell-command-to-string (capf-wordfreq--shell-command prefix)))
+  (if (file-exists-p (capf-wordfreq--dictionary))
+      (shell-command-to-string (capf-wordfreq--shell-command prefix))
+    ""))
 
 (defun capf-wordfreq--enforce-exact-prefix (cand prefix)
   (concat prefix (substring cand (length prefix) nil)))
