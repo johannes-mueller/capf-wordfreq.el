@@ -75,10 +75,11 @@ the current buffer."
 
 ;;;###autoload
 (defun capf-wordfreq-completion-at-point-function ()
-  (let* ((bounds (bounds-of-thing-at-point 'word))
-	 (beg (car bounds))
-	 (end (cdr bounds))
-	 (prefix (buffer-substring-no-properties beg end)))
+  "The completion at point function."
+  (when-let* ((bounds (bounds-of-thing-at-point 'word))
+	      (beg (car bounds))
+	      (end (cdr bounds))
+	      (prefix (buffer-substring-no-properties beg end)))
     `(,beg ,end ,(capf-wordfreq--candidates prefix))))
 
 (provide 'capf-wordfreq)

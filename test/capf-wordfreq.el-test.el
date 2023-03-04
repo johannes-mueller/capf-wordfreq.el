@@ -69,7 +69,6 @@
   (mocker-let ((capf-wordfreq--dictionary () ((:output nil))))
     (should (equal (capf-wordfreq--candidates "foo") '()))))
 
-
 (ert-deftest test-capf-completion-at-point-function ()
   (let ((buffer-contents "f b"))
     (mocker-let ((capf-wordfreq--candidates (prefix)
@@ -85,3 +84,32 @@
 	(forward-char 1)
 	(completion-at-point)
 	(should (equal (buffer-string) "foo ba"))))))
+
+(ert-deftest test-capf-completion-after-space ()
+  (mocker-let ((capf-wordfreq--candidates (prefix) ((:input '() :occur 0))))
+    (with-temp-buffer
+      (insert "foo  ")
+      (capf-wordfreq-completion-at-point-function))))
+
+(ert-deftest test-candidates-foo-in-buffer ()
+  (mocker-let ((capf-wordfreq--grep-executable () ((:input '() :output "/path/to/grep-program")))
+	       (shell-command-to-string (command)
+                                        ((:input
+                                          '("/path/to/grep-program -i \\^foo /path/to/dict.txt")
+                                          :output "foofoo\nfoobaz\nfoo\n")))
+               (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
+    (with-temp-buffer
+      (insert "foo")
+      (should (equal (capf-wordfreq-completion-at-point-function) '(1 4 ("foofoo" "foobaz" "foo")))))))
+
+(ert-deftest test-candidates-bar-in-buffer ()
+  (mocker-let ((capf-wordfreq--grep-executable () ((:input '() :output "/path/to/grep-program")))
+	       (shell-command-to-string (command)
+                                        ((:input
+                                          '("/path/to/grep-program -i \\^ba /path/to/dict.txt")
+                                          :output "barbar\nbarbaz\nbar\n")))
+               (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
+    (with-temp-buffer
+      (insert "foo ba")
+      (when-let ((foo nil)))
+      (should (equal (capf-wordfreq-completion-at-point-function) '(5 7 ("barbar" "barbaz" "bar")))))))
