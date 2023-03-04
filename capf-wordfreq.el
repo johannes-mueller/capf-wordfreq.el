@@ -45,15 +45,29 @@ the current buffer."
 (defun capf-wordfreq--grep-executable ()
   (capf-wordfreq--find-grep-executable))
 
+(defun capf-wordfreq--shell-command (prefix)
+  (concat
+   (capf-wordfreq--grep-executable)
+   " -i "
+   (shell-quote-argument (concat "^" prefix))
+   " " (capf-wordfreq--dictionary)))
+
+(defun capf-wordfreq--fetch-candidates-raw (prefix)
+  (shell-command-to-string (capf-wordfreq--shell-command prefix)))
+
+(defun capf-wordfreq--enforce-exact-prefix (cand prefix)
+  (concat prefix (substring cand (length prefix) nil)))
+
+(defun capf-wordfreq--drop-empty-last-candidate (candlist)
+  (if (equal (nth (1- (length candlist)) candlist) "")
+      (butlast candlist)
+    candlist))
+
 (defun capf-wordfreq--candidates (prefix)
   "Fetches the candidates matching PREFIX."
-  (split-string
-   (shell-command-to-string (concat
-                             (capf-wordfreq--grep-executable)
-                             " -i "
-                             (shell-quote-argument (concat "^" prefix))
-                             " " (capf-wordfreq--dictionary)))
-   "\n"))
+  (mapcar (lambda (cand) (capf-wordfreq--enforce-exact-prefix cand prefix))
+          (capf-wordfreq--drop-empty-last-candidate
+           (split-string (capf-wordfreq--fetch-candidates-raw prefix) "\n"))))
 
 ;;;###autoload
 (defun capf-wordfreq-completion-at-point-function ()

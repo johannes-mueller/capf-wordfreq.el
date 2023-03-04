@@ -24,7 +24,7 @@
 	       (shell-command-to-string (command)
                                         ((:input
                                           '("/path/to/grep-program -i \\^foo /path/to/dict.txt")
-                                          :output "foobar\nfoobaz\nfoo")))
+                                          :output "foobar\nfoobaz\nfoo\n")))
                (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
     (should (equal (capf-wordfreq--candidates "foo") '("foobar" "foobaz" "foo")))))
 
@@ -33,18 +33,27 @@
 	       (shell-command-to-string (command)
                                         ((:input
                                           '("/path/to/grep-program -i \\^Foo /path/to/dict.txt")
-                                          :output "foobar\nfoobaz\nfoo")))
+                                          :output "foobar\nfoobaz\nfoo\n")))
                (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
-    (should (equal (capf-wordfreq--candidates "Foo") '("foobar" "foobaz" "foo")))))
+    (should (equal (capf-wordfreq--candidates "Foo") '("Foobar" "Foobaz" "Foo")))))
 
 (ert-deftest test-candidates-bar ()
   (mocker-let ((capf-wordfreq--grep-executable () ((:input '() :output "/other/path/to/grep-program")))
 	       (shell-command-to-string (command)
                                         ((:input
                                           '("/other/path/to/grep-program -i \\^bar /other/path/to/dict.txt")
-                                          :output "barbar\nbarbaz\nbar")))
+                                          :output "barbar\nbarbaz\nbar\n")))
                (capf-wordfreq--dictionary () ((:output "/other/path/to/dict.txt"))))
     (should (equal (capf-wordfreq--candidates "bar") '("barbar" "barbaz" "bar")))))
+
+(ert-deftest test-candidates-no-newline-at-end ()
+  (mocker-let ((capf-wordfreq--grep-executable () ((:input '() :output "/path/to/grep-program")))
+	       (shell-command-to-string (command)
+                                        ((:input
+                                          '("/path/to/grep-program -i \\^foo /path/to/dict.txt")
+                                          :output "foobar\nfoobaz\nfoo")))
+               (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
+    (should (equal (capf-wordfreq--candidates "foo") '("foobar" "foobaz" "foo")))))
 
 (ert-deftest test-capf-completion-at-point-function ()
   (let ((buffer-contents "f b"))
