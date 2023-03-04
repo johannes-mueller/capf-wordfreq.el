@@ -34,7 +34,9 @@ the current buffer."
 
 (defun capf-wordfreq--dictionary ()
   "Determine the path of the word list file."
-  (concat (file-name-as-directory capf-wordfreq-path) ispell-local-dictionary ".txt"))
+  (when-let* ((dct ispell-local-dictionary)
+              (dct-file (concat (file-name-as-directory capf-wordfreq-path) dct ".txt")))
+    (if (file-exists-p dct-file) dct-file)))
 
 (defvar capf-wordfreq--cached-grep-executable nil)
 
@@ -53,7 +55,7 @@ the current buffer."
    " " (capf-wordfreq--dictionary)))
 
 (defun capf-wordfreq--fetch-candidates-raw (prefix)
-  (if (file-exists-p (capf-wordfreq--dictionary))
+  (if (capf-wordfreq--dictionary)
       (shell-command-to-string (capf-wordfreq--shell-command prefix))
     ""))
 
