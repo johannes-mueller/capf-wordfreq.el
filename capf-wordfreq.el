@@ -32,6 +32,11 @@ the current buffer."
   :type 'string
   :group 'capf)
 
+(defcustom capf-wordfreq-minimal-candidate-length 0
+  "The minimal length of the candidates"
+  :type 'integer
+  :group 'capf)
+
 (defun capf-wordfreq--dictionary ()
   "Determine the path of the word list file."
   (when-let* ((dct ispell-local-dictionary)
@@ -69,9 +74,12 @@ the current buffer."
 
 (defun capf-wordfreq--candidates (prefix)
   "Fetches the candidates matching PREFIX."
-  (mapcar (lambda (cand) (capf-wordfreq--enforce-exact-prefix cand prefix))
-          (capf-wordfreq--drop-empty-last-candidate
-           (split-string (capf-wordfreq--fetch-candidates-raw prefix) "\n"))))
+  (mapcar
+   (lambda (cand) (capf-wordfreq--enforce-exact-prefix cand prefix))
+   (seq-filter
+    (lambda (cand) (>= (length cand) capf-wordfreq-minimal-candidate-length))
+    (capf-wordfreq--drop-empty-last-candidate
+     (split-string (capf-wordfreq--fetch-candidates-raw prefix) "\n")))))
 
 ;;;###autoload
 (defun capf-wordfreq-completion-at-point-function ()

@@ -65,6 +65,16 @@
                (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
     (should (equal (capf-wordfreq--candidates "foo") '("foobar" "foobaz" "foo")))))
 
+(ert-deftest test-candidates-foo-minimal-candidate-length ()
+  (let ((capf-wordfreq-minimal-candidate-length 4))
+    (mocker-let ((capf-wordfreq--grep-executable () ((:input '() :output "/path/to/grep-program")))
+	         (shell-command-to-string (command)
+                                          ((:input
+                                            '("/path/to/grep-program -i \\^foo /path/to/dict.txt")
+                                            :output "foobar\nfoob\nfoo\n")))
+                 (capf-wordfreq--dictionary () ((:output "/path/to/dict.txt"))))
+      (should (equal (capf-wordfreq--candidates "foo") '("foobar" "foob"))))))
+
 (ert-deftest test-dict-file-not-found ()
   (mocker-let ((capf-wordfreq--dictionary () ((:output nil))))
     (should (equal (capf-wordfreq--candidates "foo") '()))))
