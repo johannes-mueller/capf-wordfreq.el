@@ -39,6 +39,29 @@ install it is to use [[https://github.com/raxod502/straight.el][straight.el]].
  '(capf-wordfreq :type git :host github :repo "johannes-mueller/capf-wordfreq.el"))
 #+END_EXAMPLE
 
+** Configuration
+
+Oftentimes the candidates are flooded with short words that you can type faster
+than choosing the completion.  You can tell =capf-wordfreq= to propose only
+candidates longer than a certain length using the valiable
+=capf-wordfreq-minmal-candidate-length=.
+
+#+BEGIN_EXAMPLE emacs-lisp
+(setq capf-wordfreq-minimal-candidate-length 5)
+#+END_EXAMPLE
+
+will give you only candidates longer than five letters.
+
+** Caveats
+
+If you use =capf-wordfreq= in combination with a package like [[http://github.com/minad/corfu][corfu.el]] you
+might come across the problem that keystrokes of your typing are gulped every
+now and then.  That happens when a new completion candidate list is demanded
+before the former one is ready.
+
+You can mitigate this by a higher =corfu-auto-delay=. Try setting it to 0.7 or
+0.9 in text mode.
+
 ** Word list files
 
 This is a new implementation of [[https://github.com/johannes-mueller/company-wordfreq.el][company-wordfreq.el]] which depends on
