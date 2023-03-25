@@ -7,7 +7,7 @@ dictionaries.
 
 ** Synopsis
 
-=capf-wordfreq= is a `completion-at-point` fnuciton intended for writing texts
+=capf-wordfreq= is a `completion-at-point` function intended for writing texts
 in a human language.  The completions it proposes are words already used in the
 current (or another open) buffer and matching words from a word list file.
 This word list file is supposed to be a simple list of words ordered by the
