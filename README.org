@@ -54,13 +54,11 @@ will give you only candidates longer than five letters.
 
 ** Caveats
 
-If you use =capf-wordfreq= in combination with a package like [[http://github.com/minad/corfu][corfu.el]] you
-might come across the problem that keystrokes of your typing are gulped every
-now and then.  That happens when a new completion candidate list is demanded
-before the former one is ready.
+The whole thing is not well tested.  Especially the asynchronous communication
+between Emacs and the external process might be unstable.
 
-You can mitigate this by a higher =corfu-auto-delay=. Try setting it to 0.7 or
-0.9 in text mode.
+Furthermore, this is UNIX-only.  You need the usual UNIX utils in your
+execution path.
 
 ** Word list files
 
@@ -70,6 +68,10 @@ being use the =company-wordfreq.el= to download the dictionaty files.
 
 ** Status
 
-It is a quick reimplementation of =company-wordfreq.el= in an early stage of
-development.  After a bit of testing I will eventually add the dictionary
+It is a quick reimplementation of =company-wordfreq.el=. It turned out that an
+asynchronous communication is necessary, which makes everything a bit more
+complicated.  The solution takes inspiration from [[this
+ discussion][https://github.com/minad/cape/issues/52#]].
+
+After a bit of testing I will eventually add the dictionary
 download features and submit it to MELPA.
