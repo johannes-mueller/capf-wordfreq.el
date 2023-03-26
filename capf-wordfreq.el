@@ -46,43 +46,8 @@ the current buffer."
               (dct-file (concat (file-name-as-directory capf-wordfreq-path) dct ".txt")))
     (if (file-exists-p dct-file) (expand-file-name dct-file))))
 
-(defvar capf-wordfreq--cached-grep-executable nil)
-
-(defun capf-wordfreq--find-grep-executable ()
-  (or capf-wordfreq--cached-grep-executable
-      (executable-find "grep")))
-
-(defun capf-wordfreq--grep-executable ()
-  (capf-wordfreq--find-grep-executable))
-
-(defun capf-wordfreq--shell-command (prefix)
-  (concat
-   (capf-wordfreq--grep-executable)
-   " -i "
-   (shell-quote-argument (concat "^" prefix))
-   " " (capf-wordfreq--dictionary)))
-
-(defun capf-wordfreq--fetch-candidates-raw (prefix)
-  (if (capf-wordfreq--dictionary)
-      (shell-command-to-string (capf-wordfreq--shell-command prefix))
-    ""))
-
 (defun capf-wordfreq--enforce-exact-prefix (cand prefix)
   (concat prefix (substring cand (length prefix) nil)))
-
-(defun capf-wordfreq--drop-empty-last-candidate (candlist)
-  (if (equal (nth (1- (length candlist)) candlist) "")
-      (butlast candlist)
-    candlist))
-
-(defun capf-wordfreq--candidates (prefix)
-  "Fetches the candidates matching PREFIX."
-  (mapcar
-   (lambda (cand) (capf-wordfreq--enforce-exact-prefix cand prefix))
-   (seq-filter
-    (lambda (cand) (>= (length cand) capf-wordfreq-minimal-candidate-length))
-    (capf-wordfreq--drop-empty-last-candidate
-     (split-string (capf-wordfreq--fetch-candidates-raw prefix) "\n")))))
 
 (defvar-local capf-wordfreq--msg-fragment "")
 
@@ -107,9 +72,9 @@ the current buffer."
 (defun capf-wordfreq--external-process-observer (&rest _)
   (if-let* ((dict-file (capf-wordfreq--dictionary))
             (bounds (bounds-of-thing-at-point 'word))
-	    (beg (car bounds))
-	    (end (cdr bounds))
-	    (prefix (buffer-substring-no-properties beg end)))
+            (beg (car bounds))
+            (end (cdr bounds))
+            (prefix (buffer-substring-no-properties beg end)))
       (process-send-string
        (capf-wordfreq--start-external-process)
        (format "%s %s %s\n" beg dict-file prefix))
