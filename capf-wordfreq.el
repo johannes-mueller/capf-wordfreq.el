@@ -19,6 +19,8 @@
 
 ;;; Commentary:
 
+(require 'subr-x)
+
 (defvar-local capf-wordfreq--begin nil)
 (defvar-local capf-wordfreq--cands nil)
 
