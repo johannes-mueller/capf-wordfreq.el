@@ -13,19 +13,16 @@
   (mocker-let ((file-exists-p (filename) ((:input '("/path/to/dicts/esperanto.txt") :output t))))
     (let ((ispell-local-dictionary "esperanto")
           (capf-wordfreq-path "/path/to/dicts"))
-      (when-let* ((foo nil)))
       (should (equal (capf-wordfreq--dictionary) "/path/to/dicts/esperanto.txt")))))
 
 (ert-deftest test-dict-path-english ()
   (mocker-let ((file-exists-p (filename) ((:input '("/other/path/to/dicts/english.txt") :output t))))
     (let ((ispell-local-dictionary "english")
           (capf-wordfreq-path "/other/path/to/dicts"))
-      (when-let* ((foo nil)))
       (should (equal (capf-wordfreq--dictionary) "/other/path/to/dicts/english.txt")))))
 
 (ert-deftest test-no-ispell-dictionary-dict-path-nil ()
   (let ((ispell-local-dictionary nil))
-    (when-let* ((foo nil)))
     (should (equal (capf-wordfreq--dictionary) nil))))
 
 
@@ -88,7 +85,6 @@
                (process-send-string (process string) ((:input '(start-external-process "1 /foo/bar/esperanto.txt foo\n")))))
     (with-temp-buffer
       (insert "foo")
-      (if-let* ((foo nil)) nil)
       (capf-wordfreq--external-process-observer 'foo))))
 
 (ert-deftest test-observer-bar ()
@@ -97,7 +93,6 @@
                (process-send-string (process string) ((:input '(start-external-process "5 /foo/bar/deutsch.txt bar\n")))))
     (with-temp-buffer
       (insert "foo bar")
-      (if-let* ((foo nil)) nil)
       (capf-wordfreq--external-process-observer 'foo))))
 
 
@@ -106,7 +101,6 @@
                (process-send-string (process string) ((:input '() :occur 0))))
     (with-temp-buffer
       (insert "foo bar")
-      (if-let* ((foo nil)) nil)
       (capf-wordfreq--external-process-observer 'foo))))
 
 
@@ -117,7 +111,6 @@
           (capf-wordfreq--cands '("foo" "foobar")))
       (with-temp-buffer
         (insert "foo bar ")
-        (if-let* ((foo nil)) nil)
         (capf-wordfreq--external-process-observer 'foo)
         (should (eq capf-wordfreq--begin nil))
         (should (eq capf-wordfreq--cands nil))))))
