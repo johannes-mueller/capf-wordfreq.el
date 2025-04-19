@@ -210,7 +210,8 @@ the word list source.  Consider filing an issue"))
     (kill-current-buffer)
     (setq capf-wordfreq--word-list-buffer nil)))
 
-(defconst capf-wordfreq--language-alist
+;;;###autoload
+(defconst capf-wordfreq-language-alist
   '(("afrikaans" . "af")
     ("arabic" . "ar")
     ("bulgarian" . "bg")
@@ -272,11 +273,11 @@ the word list source.  Consider filing an issue"))
 
 (defun capf-wordfreq--proposal-list ()
   "Get the friendly names of the languages."
-  (mapcar #'car capf-wordfreq--language-alist))
+  (mapcar #'car capf-wordfreq-language-alist))
 
 (defun capf-wordfreq--iso-code (language)
   "Get the iso code of LANGUAGE."
-  (cdr (assoc language capf-wordfreq--language-alist)))
+  (cdr (assoc language capf-wordfreq-language-alist)))
 
 (provide 'capf-wordfreq)
 ;;; capf-wordfreq.el ends here

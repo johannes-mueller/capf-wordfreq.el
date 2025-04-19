@@ -187,12 +187,12 @@
     (should (equal (capf-wordfreq--default-path) "/home/user/.emacs.d/wordfreq-dicts"))))
 
 (ert-deftest test-language-proposal-list ()
-  (let ((capf-wordfreq--language-alist '(("esperanto" . "eo")
+  (let ((capf-wordfreq-language-alist '(("esperanto" . "eo")
                                             ("english" . "en"))))
     (should (equal (capf-wordfreq--proposal-list) '("esperanto" "english")))))
 
 (ert-deftest test-language-iso-code-list ()
-  (let ((capf-wordfreq--language-alist '(("esperanto" . "eo")
+  (let ((capf-wordfreq-language-alist '(("esperanto" . "eo")
                                             ("english" . "en"))))
     (should (equal (capf-wordfreq--iso-code "esperanto") "eo"))))
 
