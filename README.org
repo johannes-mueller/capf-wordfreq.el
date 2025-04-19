@@ -43,7 +43,7 @@ install it is to use [[https://github.com/raxod502/straight.el][straight.el]].
 
 Oftentimes the candidates are flooded with short words that you can type faster
 than choosing the completion.  You can tell =capf-wordfreq= to propose only
-candidates longer than a certain length using the valiable
+candidates longer than a certain length using the variable
 =capf-wordfreq-minmal-candidate-length=.
 
 #+BEGIN_EXAMPLE emacs-lisp
@@ -64,14 +64,14 @@ execution path.
 
 This is a new implementation of [[https://github.com/johannes-mueller/company-wordfreq.el][company-wordfreq.el]] which depends on
 [[http://company-mode.github.io/][company-mode]].  =capf-wordfreq= uses the same dictionary files.  For the time
-being use the =company-wordfreq.el= to download the dictionaty files.
+being use the =company-wordfreq.el= to download the dictionary files.
 
 ** Status
 
 It is a quick reimplementation of =company-wordfreq.el=. It turned out that an
 asynchronous communication is necessary, which makes everything a bit more
 complicated.  The solution takes inspiration from [[this
- discussion][https://github.com/minad/cape/issues/52#]].
+discussion][https://github.com/minad/cape/issues/#52]].
 
 After a bit of testing I will eventually add the dictionary
 download features and submit it to MELPA.
