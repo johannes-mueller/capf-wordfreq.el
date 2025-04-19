@@ -129,6 +129,154 @@ done
       (list capf-wordfreq--begin (point) (capf-wordfreq--enforce-min-length capf-wordfreq--cands))
     (add-hook 'after-change-functions #'capf-wordfreq--external-process-observer nil 'local)))
 
+;;;###autoload
+(defun capf-wordfreq-download-list ()
+  "Download a wordlist from FrequentWords and process it for use.
+
+The language can be chosen from a completion list.  If the full
+wordlist for the chosen language is so big, that there is a
+shorter version of 50k words available, you will be prompted to
+choose the short version.  Probably it is a good idea to choose
+the short version as the full versions can be quite huge and
+introduce latency to the completion proposals."
+  (interactive)
+  (let* ((language (completing-read "Choose language: " (capf-wordfreq--proposal-list)))
+         (lang-code (capf-wordfreq--iso-code language))
+         (kind-str (when (and (capf-wordfreq--probe-50k lang-code)
+                              (capf-wordfreq--prompt-fetch-short))
+                     "50k" "full")))
+    (setq capf-wordfreq--word-list-buffer
+          (url-retrieve (capf-wordfreq--dict-url lang-code kind-str)
+                        #'capf-wordfreq--list-retrieved-callback
+                        `(,language)
+                        :inhibit-cookies))))
+
+(defconst capf-wordfreq--frequency-word-url-prefix
+  "https://raw.githubusercontent.com/johannes-mueller/FrequencyWords/master/content/2018/")
+
+(defun capf-wordfreq--dict-url (lang-code kind)
+  "Setup the file path for the language LANG-CODE.
+KIND is either \"full\" or \"50k\"."
+    (concat capf-wordfreq--frequency-word-url-prefix
+            lang-code "/"
+            lang-code "_"
+            kind ".txt"))
+
+(defun capf-wordfreq--probe-50k (lang-code)
+  "Test if a 50k version for language LANG-CODE is available."
+  (let ((url-request-method "HEAD"))
+    (with-current-buffer (url-retrieve-synchronously
+                          (capf-wordfreq--dict-url lang-code "50k")
+                          :inhibit-cookies)
+      (goto-char (point-min))
+      (let ((status-code
+             (nth 1 (split-string (car (split-string (buffer-string) "\n")) " "))))
+        (kill-current-buffer)
+        (not (equal status-code "404"))))))
+
+(defun capf-wordfreq--drop-http-response-header ()
+  "Delete the http response header from received word list."
+  (goto-char (point-min))
+  (re-search-forward "^$")
+  (forward-char)
+  (delete-region (point-min) (point)))
+
+(defun capf-wordfreq--drop-frequency-values ()
+  "Delete the frequency value after each word in the word list."
+  (goto-char (point-min))
+  (while (re-search-forward "\s[0-9]+$" nil t)
+    (replace-match "" nil nil)))
+
+(defun capf-wordfreq--prompt-fetch-short ()
+  "Prompt if the user wants the short version of the word list."
+  (y-or-n-p "Use reduced length 50k words? "))
+
+(defun capf-wordfreq--list-retrieved-callback (response language)
+  "Process the downloaded word list and save it to the appropriate place.
+
+RESPONSE the http response from `url-retrieve', LANGUAGE the
+language of the word list."
+  (when (eq (car response) :error)
+    (user-error "Fetching the word list failed, sorry.
+Either a problem with your net connection or something has changed with
+the word list source.  Consider filing an issue"))
+  (with-current-buffer capf-wordfreq--word-list-buffer
+    (capf-wordfreq--drop-http-response-header)
+    (capf-wordfreq--drop-frequency-values)
+    (unless (file-directory-p capf-wordfreq-path)
+      (make-directory capf-wordfreq-path))
+    (write-file (concat (file-name-as-directory capf-wordfreq-path)
+                        language ".txt"))
+    (kill-current-buffer)
+    (setq capf-wordfreq--word-list-buffer nil)))
+
+(defconst capf-wordfreq--language-alist
+  '(("afrikaans" . "af")
+    ("arabic" . "ar")
+    ("bulgarian" . "bg")
+    ("bengali" . "bn")
+    ("breton" . "br")
+    ("bosnian" . "bs")
+    ("catalan" . "ca")
+    ("czech" . "cs")
+    ("danish" . "da")
+    ("german" . "de")
+    ("greek" . "el")
+    ("english" . "en")
+    ("esperanto" . "eo")
+    ("spanish" . "es")
+    ("estonian" . "et")
+    ("basque" . "eu")
+    ("persian" . "fa")
+    ("finnish" . "fi")
+    ("french" . "fr")
+    ("galician" . "gl")
+    ("hebrew" . "he")
+    ("hindi" . "hi")
+    ("croatian" . "hr")
+    ("hungarian" . "hu")
+    ("armenian" . "hy")
+    ("indonesian" . "id")
+    ("icelandic" . "is")
+    ("italian" . "it")
+    ("japanese" . "ja")
+    ("georgian" . "ka")
+    ("kazakh" . "kk")
+    ("korean" . "ko")
+    ("lithuanian" . "lt")
+    ("latvian" . "lv")
+    ("macedonian" . "mk")
+    ("malayalam" . "ml")
+    ("malay" . "ms")
+    ("dutch" . "nl")
+    ("norwegian" . "no")
+    ("polish" . "pl")
+    ("portuguese" . "pt")
+    ("brasileiro" .  "pt_br")
+    ("romanian" . "ro")
+    ("russian" . "ru")
+    ("sinhala" . "si")
+    ("slovak" . "sk")
+    ("slovenian" . "sl")
+    ("albanian" . "sq")
+    ("serbian" . "sr")
+    ("swedish" . "sv")
+    ("tamil" . "ta")
+    ("telugu" . "te")
+    ("thai" . "th")
+    ("tagalog" . "tl")
+    ("turkish" . "tr")
+    ("ukrainian" . "uk")
+    ("urdu" . "ur")
+    ("vietnamese" . "vi")))
+
+(defun capf-wordfreq--proposal-list ()
+  "Get the friendly names of the languages."
+  (mapcar #'car capf-wordfreq--language-alist))
+
+(defun capf-wordfreq--iso-code (language)
+  "Get the iso code of LANGUAGE."
+  (cdr (assoc language capf-wordfreq--language-alist)))
 
 (provide 'capf-wordfreq)
 ;;; capf-wordfreq.el ends here
