@@ -127,7 +127,8 @@ done
   "The completion at point function."
   (if (and capf-wordfreq--begin capf-wordfreq--cands)
       (list capf-wordfreq--begin (point) (capf-wordfreq--enforce-min-length capf-wordfreq--cands))
-    (add-hook 'after-change-functions #'capf-wordfreq--external-process-observer nil 'local)))
+    (add-hook 'after-change-functions #'capf-wordfreq--external-process-observer nil 'local)
+    '()))
 
 ;;;###autoload
 (defun capf-wordfreq-download-list ()
